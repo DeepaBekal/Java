@@ -17,7 +17,7 @@ public class CollectNewspaperKarel extends SuperKarel {
 		toPath();
 		pickBeeper();
 		fromPath();
-		/*this is added to reset Karel to starting position*/
+		/*this is added to reset Karel to start position*/
 		toPath();				
 		putBeeper();
 		fromPath();
