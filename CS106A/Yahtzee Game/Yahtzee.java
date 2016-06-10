@@ -88,21 +88,25 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				int Category= display.waitForPlayerToSelectCategory();
 				//println(Category);
 				//if(ValidateCategory(Dice, Category)){
+				while(true){
 				UpdateSelectedCategory(Category);
 				if(YahtzeeMagicStub.checkCategory(Dice, Category)){
 					if(SelectedCategory[Category]==1){
 					int Score = CalculateScore(Dice, Category);
 					display.updateScorecard(Category, i, Score);
 					ScoreBoard[i][Category]=Score;
+					break;
 					}
 					else if(SelectedCategory[Category]>1){
 						display.printMessage("You have already selected this category, please select another category.");
-						
+						Category= display.waitForPlayerToSelectCategory();
 					}
 				}
 				else {
 					display.updateScorecard(Category, i, 0);
 					ScoreBoard[i][Category]=0;
+					break;
+				}
 				}
 				int upper = CalculateScoreUL(ScoreBoard[i],0,6);
 				display.updateScorecard(6,i, upper);
@@ -164,6 +168,9 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return b;			
 	}
 	
+	/**method to keep track of selected category , increments the category by 1 every time 
+	 * a particular category is selected.Takes in argument of selected category.
+	 */
 	private void UpdateSelectedCategory(int a){
 		SelectedCategory[a]=SelectedCategory[a]+1;
 		println("category = "+a+" value ="+SelectedCategory[a]);
@@ -273,7 +280,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private YahtzeeDisplay display;							//game board graphics display
 	private int[] Dice = new int[N_DICE];					//array of roll dice combination
 	private RandomGenerator rgen = new RandomGenerator();	//to generate random numbers for dice
-	private int[] SelectedCategory=new int[N_CATEGORIES];							//keeps track of already selected category
+	private int[] SelectedCategory=new int[N_CATEGORIES];	//keeps track of already selected category
 	private int[][] ScoreBoard; 							//array of scores of all players
 	private int[] ScoreBoardTotal;							//array of total score of all players
 	
