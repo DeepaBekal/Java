@@ -69,6 +69,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	
 	private void playGame() {
 		ScoreBoard = new int[nPlayers][N_CATEGORIES];
+		SelectedCategory=new int[nPlayers][N_CATEGORIES];
 		for(int j=0;j<N_SCORING_CATEGORIES;j++){
 		
 			for(int i=0;i<nPlayers;i++){
@@ -76,28 +77,26 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				display.waitForPlayerToClickRoll(i);
 				Dice = FirstRoll(Dice);
 				display.displayDice(Dice);
+				for(int t=0;t<2;t++){
 				display.printMessage("Select the dice you wish to re-roll and click \"Roll Again\".");
 				display.waitForPlayerToSelectDice();
 				Dice = ReRoll(Dice);
 				display.displayDice(Dice);
-				display.printMessage("Select the dice you wish to re-roll and click \"Roll Again\".");
-				display.waitForPlayerToSelectDice();
-				Dice = ReRoll(Dice);
-				display.displayDice(Dice);
+				}
 				display.printMessage("Select a category for this roll.");
 				int Category= display.waitForPlayerToSelectCategory();
 				//println(Category);
 				//if(ValidateCategory(Dice, Category)){
 				while(true){
-				UpdateSelectedCategory(Category);
+				SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;
 				if(YahtzeeMagicStub.checkCategory(Dice, Category)){
-					if(SelectedCategory[Category]==1){
+					if(SelectedCategory[i][Category]==1){
 					int Score = CalculateScore(Dice, Category);
 					display.updateScorecard(Category, i, Score);
 					ScoreBoard[i][Category]=Score;
 					break;
 					}
-					else if(SelectedCategory[Category]>1){
+					else if(SelectedCategory[i][Category]>1){
 						display.printMessage("You have already selected this category, please select another category.");
 						Category= display.waitForPlayerToSelectCategory();
 					}
@@ -166,14 +165,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			}
 		}
 		return b;			
-	}
-	
-	/**method to keep track of selected category , increments the category by 1 every time 
-	 * a particular category is selected.Takes in argument of selected category.
-	 */
-	private void UpdateSelectedCategory(int a){
-		SelectedCategory[a]=SelectedCategory[a]+1;
-		println("category = "+a+" value ="+SelectedCategory[a]);
 	}
 	
 	/**method to calculate score for the selected category
@@ -280,7 +271,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private YahtzeeDisplay display;							//game board graphics display
 	private int[] Dice = new int[N_DICE];					//array of roll dice combination
 	private RandomGenerator rgen = new RandomGenerator();	//to generate random numbers for dice
-	private int[] SelectedCategory=new int[N_CATEGORIES];	//keeps track of already selected category
+	private int[][] SelectedCategory;						//keeps track of already selected category
 	private int[][] ScoreBoard; 							//array of scores of all players
 	private int[] ScoreBoardTotal;							//array of total score of all players
 	
