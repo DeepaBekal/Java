@@ -78,34 +78,40 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				Dice = FirstRoll(Dice);
 				display.displayDice(Dice);
 				for(int t=0;t<2;t++){
-				display.printMessage("Select the dice you wish to re-roll and click \"Roll Again\".");
-				display.waitForPlayerToSelectDice();
-				Dice = ReRoll(Dice);
-				display.displayDice(Dice);
+					display.printMessage("Select the dice you wish to re-roll and click \"Roll Again\".");
+					display.waitForPlayerToSelectDice();
+					Dice = ReRoll(Dice);
+					display.displayDice(Dice);
 				}
 				display.printMessage("Select a category for this roll.");
 				int Category= display.waitForPlayerToSelectCategory();
 				//println(Category);
 				//if(ValidateCategory(Dice, Category)){
 				while(true){
-				SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;
-				if(YahtzeeMagicStub.checkCategory(Dice, Category)){
-					if(SelectedCategory[i][Category]==1){
-					int Score = CalculateScore(Dice, Category);
-					display.updateScorecard(Category, i, Score);
-					ScoreBoard[i][Category]=Score;
-					break;
+					SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;
+					if(YahtzeeMagicStub.checkCategory(Dice, Category)){
+						if(SelectedCategory[i][Category]==1){
+						int Score = CalculateScore(Dice, Category);
+						display.updateScorecard(Category, i, Score);
+						ScoreBoard[i][Category]=Score;
+						break;
+						}
+						else if(SelectedCategory[i][Category]>1){
+							display.printMessage("You have already selected this category, please select another category.");
+							Category= display.waitForPlayerToSelectCategory();
+						}
 					}
-					else if(SelectedCategory[i][Category]>1){
-						display.printMessage("You have already selected this category, please select another category.");
-						Category= display.waitForPlayerToSelectCategory();
+					else {
+						if(SelectedCategory[i][Category]==1){
+							display.updateScorecard(Category, i, 0);
+							ScoreBoard[i][Category]=0;
+							break;
+						}
+						else if(SelectedCategory[i][Category]>1){
+							display.printMessage("You have already selected this category, please select another category.");
+							Category= display.waitForPlayerToSelectCategory();
+						}
 					}
-				}
-				else {
-					display.updateScorecard(Category, i, 0);
-					ScoreBoard[i][Category]=0;
-					break;
-				}
 				}
 				int upper = CalculateScoreUL(ScoreBoard[i],0,6);
 				display.updateScorecard(6,i, upper);
