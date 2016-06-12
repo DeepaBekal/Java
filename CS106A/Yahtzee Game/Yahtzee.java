@@ -4,6 +4,8 @@
  * This program will eventually play the Yahtzee game.
  */
 
+import java.util.ArrayList;
+
 import acm.io.*;
 import acm.program.*;
 import acm.util.*;
@@ -85,11 +87,11 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				}
 				display.printMessage("Select a category for this roll.");
 				int Category= display.waitForPlayerToSelectCategory();
-				//println(Category);
-				//if(ValidateCategory(Dice, Category)){
+				println(Category);				
 				while(true){
 					SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;
-					if(YahtzeeMagicStub.checkCategory(Dice, Category)){
+					//if(YahtzeeMagicStub.checkCategory(Dice, Category)){
+					if(ValidateCategory(Dice, Category)){
 						if(SelectedCategory[i][Category]==1){
 						int Score = CalculateScore(Dice, Category);
 						display.updateScorecard(Category, i, Score);
@@ -172,6 +174,119 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return b;			
 	}
+	
+	/**Method to validate if the selected category by the player is valid. Returns always true 
+	 * for ONES, TWOS, THREES, FOURS, FIVES, SIXES, CHANCE, since these cases does not have
+	 * combination restrictions as in other cases & present of these numbers & score is taken 
+	 * care in method CalculateScore. Takes in rolled dice data, category selected by player.
+	 * Evaluates & returns boolean true/false.
+	 * Pre-condition : Final combination of dice rolled is available for 3 turns & player 
+	 * has selected the category for scoring 
+	 */
+	
+	private boolean ValidateCategory(int[]a, int b){
+		boolean result = false;							//result to be returned is stored in this
+		
+		/*Checks for presence of digits in dice array & sets flag respectively in d array
+		 * created for each digit from 1 to 6*/
+		SetFlag(a);
+		
+		/*returns always true for these categories*/
+		if (b==ONES||b==TWOS||b==THREES||b==FOURS||b==FIVES||b==SIXES||b==CHANCE){
+			result = true;
+		}
+		
+		else if(b==THREE_OF_A_KIND){
+				if(Ones.size()>=3||Twos.size()>=3||Threes.size()>=3||Fours.size()>=3||Fives.size()>=3||Sixes.size()>=3){
+					result = true;
+					println("three of a kind");
+				}
+		}
+		
+		else if(b==FOUR_OF_A_KIND){
+			if(Ones.size()>=4||Twos.size()>=4||Threes.size()>=4||Fours.size()>=4||Fives.size()>=4||Sixes.size()>=4){
+				result = true;
+				println("four of a kind");
+			}
+		}
+		
+		else if(b==YAHTZEE){
+			if(Ones.size()>=5||Twos.size()>=5||Threes.size()>=5||Fours.size()>=5||Fives.size()>=5||Sixes.size()>=5){
+				result = true;
+				println("yahtzee");
+			}
+		}
+		
+		else if(b==FULL_HOUSE){
+			if(Ones.size()==3||Twos.size()==3||Threes.size()==3||Fours.size()==3||Fives.size()==3||Sixes.size()==3){
+				if((Ones.size()==2||Twos.size()==2||Threes.size()==2||Fours.size()==2||Fives.size()==2||Sixes.size()==2)){
+					result=true;
+					println("full house");
+				}
+			}
+		}
+		
+		else if(b==LARGE_STRAIGHT){
+			if(Ones.size()==1&&Twos.size()==1&&Threes.size()==1&&Fours.size()==1&&Fives.size()==1){
+				result = true;
+				println("large straight");
+			}
+			else if(Twos.size()==1&&Threes.size()==1&&Fours.size()==1&&Fives.size()==1&&Sixes.size()==1){
+			result = true;
+			println("large straight");
+			}
+		}
+		
+		
+		
+		else if(b==SMALL_STRAIGHT){
+			if(Ones.size()>=1&&Twos.size()>=1&&Threes.size()>=1&&Fours.size()>=1){
+				result = true;
+				println("small straight");	
+			}
+			else if(Twos.size()>=1&&Threes.size()>=1&&Fours.size()>=1&&Fives.size()>=1){
+				result = true;
+				println("small straight");	
+			}
+			else if(Threes.size()>=1&&Fours.size()>=1&&Fives.size()>=1&&Sixes.size()>=1){
+			result = true;
+			println("small straight");
+			}
+		}
+		println("combi ones "+Ones.size()+" twos"+Twos.size()+" threes"+Threes.size()+" fours"+Fours.size()+" fives"+Fives.size()+" sixes"+Sixes.size());
+		return result;
+	}
+	
+	private ArrayList<Integer> Ones;		//Array to keep track of number of 1's in dice
+	private ArrayList<Integer> Twos;		//Array to keep track of number of 2's in dice
+	private ArrayList<Integer> Threes;		//Array to keep track of number of 3's in dice
+	private ArrayList<Integer> Fours;		//Array to keep track of number of 4's in dice
+	private ArrayList<Integer> Fives;		//Array to keep track of number of 5's in dice
+	private ArrayList<Integer> Sixes;		//Array to keep track of number of 6's in dice
+	
+	/**Method increases the array length by adding 1 to the array for each number found
+	 * respectively as rolled in the dice at the end of 3 turns. Takes in the dice rolled 
+	 * array as arguments.
+	 * Pre-condition : Player has selected category to scoring & ValidateCategory method is 
+	 * called.
+	 */
+	private void SetFlag(int[]a){
+		Ones = new ArrayList<Integer>();
+		Twos = new ArrayList<Integer>();
+		Threes = new ArrayList<Integer>();
+		Fours = new ArrayList<Integer>();
+		Fives = new ArrayList<Integer>();
+		Sixes = new ArrayList<Integer>();	
+		for(int i=0;i<a.length;i++){
+			if(a[i]==1) Ones.add(1);
+			else if (a[i]==2) Twos.add(1);
+			else if (a[i]==3) Threes.add(1);
+			else if (a[i]==4) Fours.add(1);
+			else if (a[i]==5) Fives.add(1);
+			else if (a[i]==6) Sixes.add(1);
+		}
+	}
+	
 	
 	/**method to calculate score for the selected category
 	 * Pre-condition : scoring category is selected by the player. Takes in arguments of the 
