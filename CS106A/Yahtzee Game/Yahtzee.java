@@ -17,6 +17,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		playGame();
 	}
 	
+	
 	/**
 	 * Prompts the user for information about the number of players, then sets up the
 	 * players array and number of players.
@@ -34,6 +35,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			playerNames[i] = dialog.readLine("Enter name for player " + (i + 1));
 		}
 	}
+	
 	
 	/**
 	 * Prompts the user for a number of players in this game, reprompting until the user
@@ -57,6 +59,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 	}
 	
+	
 	/**
 	 * Sets up the YahtzeeDisplay associated with this game.
 	 */
@@ -64,61 +67,94 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display = new YahtzeeDisplay(getGCanvas(), playerNames);
 	}
 
+	
 	/**
 	 * Actually plays a game of Yahtzee.  This is where you should begin writing your
 	 * implementation.
-	 */
-	
+	 */	
 	private void playGame() {
-		ScoreBoard = new int[nPlayers][N_CATEGORIES];
-		SelectedCategory=new int[nPlayers][N_CATEGORIES];
-		for(int j=0;j<N_SCORING_CATEGORIES;j++){
+		ScoreBoard = new int[nPlayers][N_CATEGORIES];			//to keep track of scores of all players 
+		SelectedCategory=new int[nPlayers][N_CATEGORIES];		//to keep track of selected scoring categories
 		
+		/*for N_SCORING_CATEGORIES=13 rounds of the game*/
+		for(int j=0;j<N_SCORING_CATEGORIES;j++){
+			
+			/*for nPlayers= no. of players in the game*/
 			for(int i=0;i<nPlayers;i++){
 				display.printMessage(playerNames[i]+"'s turn! Click \"Roll Dice\" button to roll the dice.");
-				display.waitForPlayerToClickRoll(i);
-				Dice = FirstRoll(Dice);
-				display.displayDice(Dice);
+				display.waitForPlayerToClickRoll(i);		//waits for player to click roll dice
+				Dice = FirstRoll(Dice);						//generates random numbers(1-6) on dice
+				display.displayDice(Dice);					//displays the rolled dice
+				
+				
+				/*repeats re-roll twice only for selected dice for re-roll*/
 				for(int t=0;t<2;t++){
 					display.printMessage("Select the dice you wish to re-roll and click \"Roll Again\".");
-					display.waitForPlayerToSelectDice();
+					display.waitForPlayerToSelectDice();	//waits for player to select dice for re-roll
 					Dice = ReRoll(Dice);
 					display.displayDice(Dice);
 				}
+				
+				
 				display.printMessage("Select a category for this roll.");
-				int Category= display.waitForPlayerToSelectCategory();
-				println(Category);				
+				int Category= display.waitForPlayerToSelectCategory();		//waits for player to click on score board to select a category
+				//println(Category);											//for testing purpose	
+				int YahtzeeCounter;											//to track multiple Yahtzee scoring
+				
+				
+				/*if at all player selects the same category for scoring the loop repeats until
+				 * a fresh scoring category is selected */
 				while(true){
-					SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;
-					//if(YahtzeeMagicStub.checkCategory(Dice, Category)){
+					SelectedCategory[i][Category]=SelectedCategory[i][Category]+1;		//to increment each category counter when selected
+					
+					
+					//if(YahtzeeMagicStub.checkCategory(Dice, Category)){				//for debugging
+					/*Validates the selected category*/
 					if(ValidateCategory(Dice, Category)){
-						if(SelectedCategory[i][Category]==1){
-						int Score = CalculateScore(Dice, Category);
-						display.updateScorecard(Category, i, Score);
-						ScoreBoard[i][Category]=Score;
-						break;
+						
+						/*execute score calculation & update only if the category was not previously 
+						 * selected, except in case of YAHTZEE & then breaks from loop*/
+						if(SelectedCategory[i][Category]==1||Category==YAHTZEE){
+							YahtzeeCounter=SelectedCategory[i][Category];					//for bonus score score calculation counter
+							int Score = CalculateScore(Dice, Category, YahtzeeCounter);		//calculates score
+							display.updateScorecard(Category, i, Score);					//displays calculated score on board
+							ScoreBoard[i][Category]=Score;									//updates score in score board array
+							break;
 						}
+						
+						/*if the same category is selected more than once*/
 						else if(SelectedCategory[i][Category]>1){
 							display.printMessage("You have already selected this category, please select another category.");
 							Category= display.waitForPlayerToSelectCategory();
 						}
 					}
+					
+					
+					/*if the validation for category fails then score is 0 & breaks from loop*/
 					else {
+						
+						/*not a valid category & category is selected 1st time*/
 						if(SelectedCategory[i][Category]==1){
 							display.updateScorecard(Category, i, 0);
 							ScoreBoard[i][Category]=0;
 							break;
 						}
+						
+						/*not a valid category & category is already selected*/
 						else if(SelectedCategory[i][Category]>1){
 							display.printMessage("You have already selected this category, please select another category.");
 							Category= display.waitForPlayerToSelectCategory();
 						}
 					}
-				}
-				int upper = CalculateScoreUL(ScoreBoard[i],0,6);
-				display.updateScorecard(6,i, upper);
-				ScoreBoard[i][6]=upper;
-				int bonus =0;
+				}	//end of while loop
+				
+				int upper = CalculateScoreUL(ScoreBoard[i],0,6);		//calculates upper score
+				display.updateScorecard(6,i, upper);					//updates in score board
+				ScoreBoard[i][6]=upper;									//updates score board array
+				int bonus =0;	
+				
+				
+				/*bonus=35 of upper score>63*/
 				if(upper>=63) {
 					bonus = 35;
 					display.updateScorecard(7,i,bonus);
@@ -129,10 +165,13 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 					display.updateScorecard(7,i,bonus);					
 					ScoreBoard[i][7]=bonus;
 				}
-				int lower = CalculateScoreUL(ScoreBoard[i],8,15);
+				
+				
+				int lower = CalculateScoreUL(ScoreBoard[i],8,15);			//calculates lower score
 				display.updateScorecard(15,i,lower);
 				ScoreBoard[i][15]=lower;
-				int total=upper+bonus+lower;
+				
+				int total=upper+bonus+lower;				//total score calculation
 				println(total);
 				display.updateScorecard(16,i,total);
 				ScoreBoard[i][16]=total;
@@ -140,25 +179,30 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			
 		}	// end of all 13 rounds of game
 		
-		for(int u=0;u<ScoreBoard.length;u++){
+		/*for testing*/
+		/*for(int u=0;u<ScoreBoard.length;u++){					
 			for(int v=0;v<ScoreBoard[u].length;v++){
 				print(ScoreBoard[u][v]+" ");
 			}
 			print('\n');
-		}
-		HighestScorer(ScoreBoard,TOTAL);		
+		}*/
+		
+		HighestScorer(ScoreBoard,TOTAL);			//checks for highest scorer & prints		
 	}	//end of PlayGame
 		
-	/**Method to roll the dice
-	 * Pre-condition : player rolls the dice. Takes in DICE array & returns the same array 
+	
+	/**Method to roll the dice & to generate random numbers(1-6) on the dices
+	 * Pre-condition : Player clicks on roll dice. Takes in DICE array & returns the same array 
 	 * with the roll combination.
 	 */
 	private int[] FirstRoll(int[]a) {
 		for(int i=0;i<a.length;i++){
-			a[i] = rgen.nextInt(1,6);
+			a[i] =rgen.nextInt(1,6);
 		}
 		return a;			
 	}
+	
+	
 	/**Method to re-roll the selected dice.
 	 * Pre-condition : First roll has been played by player. Dice to be re-rolled has been 
 	 * chosen.Takes in the rolled dice combination & returns the new dice combination for 
@@ -175,6 +219,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return b;			
 	}
 	
+	
 	/**Method to validate if the selected category by the player is valid. Returns always true 
 	 * for ONES, TWOS, THREES, FOURS, FIVES, SIXES, CHANCE, since these cases does not have
 	 * combination restrictions as in other cases & present of these numbers & score is taken 
@@ -182,8 +227,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * Evaluates & returns boolean true/false.
 	 * Pre-condition : Final combination of dice rolled is available for 3 turns & player 
 	 * has selected the category for scoring 
-	 */
-	
+	 */	
 	private boolean ValidateCategory(int[]a, int b){
 		boolean result = false;							//result to be returned is stored in this
 		
@@ -235,9 +279,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			result = true;
 			println("large straight");
 			}
-		}
-		
-		
+		}		
 		
 		else if(b==SMALL_STRAIGHT){
 			if(Ones.size()>=1&&Twos.size()>=1&&Threes.size()>=1&&Fours.size()>=1){
@@ -253,17 +295,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			println("small straight");
 			}
 		}
-		println("combi ones "+Ones.size()+" twos"+Twos.size()+" threes"+Threes.size()+" fours"+Fours.size()+" fives"+Fives.size()+" sixes"+Sixes.size());
+		/*println("combi ones "+Ones.size()+" twos"+Twos.size()+" threes"+Threes.size()
+		+" fours"+Fours.size()+" fives"+Fives.size()+" sixes"+Sixes.size());*/ //for testing
 		return result;
 	}
 	
-	private ArrayList<Integer> Ones;		//Array to keep track of number of 1's in dice
-	private ArrayList<Integer> Twos;		//Array to keep track of number of 2's in dice
-	private ArrayList<Integer> Threes;		//Array to keep track of number of 3's in dice
-	private ArrayList<Integer> Fours;		//Array to keep track of number of 4's in dice
-	private ArrayList<Integer> Fives;		//Array to keep track of number of 5's in dice
-	private ArrayList<Integer> Sixes;		//Array to keep track of number of 6's in dice
-	
+
 	/**Method increases the array length by adding 1 to the array for each number found
 	 * respectively as rolled in the dice at the end of 3 turns. Takes in the dice rolled 
 	 * array as arguments.
@@ -292,7 +329,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * Pre-condition : scoring category is selected by the player. Takes in arguments of the 
 	 * rolled DICE combination & Category choice of player. Returns the calculated score.
 	 */
-	private int CalculateScore(int[]c,int d){
+	private int CalculateScore(int[]c,int d, int e){
 		int temp=0;									//stores the calculated score to be returned
 		/*depending on the category the selected case calculates the score*/
 		switch(d){
@@ -337,9 +374,13 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		case 12 : 
 			temp = 40;
 			break;
-		case 13 : 
+		case 13 : 									//+100 for Yahtzee>1
 			temp = 50;
+			for(int p=0;p<(e-1);p++){
+				if (e>=2) temp= temp +100;				
+			}
 			break;
+			
 		case 14 : 
 			for(int i=0;i<c.length;i++){
 				temp=temp+c[i];
@@ -347,6 +388,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return temp;
 	}
+	
 	
 	/**method to calculate running total of upper score from 1's to 6's. & also to calculate 
 	 * lower score from THREE_OF_A_KIND to CHANCE.
@@ -362,6 +404,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return temp1;
 	}
+	
 	
 	/**method to evaluate the highest scorer from single dimension array of total of all
 	 * players.
@@ -395,6 +438,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private int[][] SelectedCategory;						//keeps track of already selected category
 	private int[][] ScoreBoard; 							//array of scores of all players
 	private int[] ScoreBoardTotal;							//array of total score of all players
+	private ArrayList<Integer> Ones;		//Array to keep track of number of 1's in dice
+	private ArrayList<Integer> Twos;		//Array to keep track of number of 2's in dice
+	private ArrayList<Integer> Threes;		//Array to keep track of number of 3's in dice
+	private ArrayList<Integer> Fours;		//Array to keep track of number of 4's in dice
+	private ArrayList<Integer> Fives;		//Array to keep track of number of 5's in dice
+	private ArrayList<Integer> Sixes;		//Array to keep track of number of 6's in dice
 	
 	
 }
