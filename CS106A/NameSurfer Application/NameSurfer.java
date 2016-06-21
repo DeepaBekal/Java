@@ -9,7 +9,7 @@ import acm.program.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class NameSurfer extends ConsoleProgram implements NameSurferConstants {
+public class NameSurfer extends Program implements NameSurferConstants {
 
 	/* Method: init() */
 	/**
@@ -28,6 +28,9 @@ public class NameSurfer extends ConsoleProgram implements NameSurferConstants {
 		add(ClickClear, NORTH);
 	    addActionListeners();
 	    NameInput.addKeyListener(this);
+	    DB = new NameSurferDataBase(NAMES_DATA_FILE);
+	    Graph = new NameSurferGraph();
+	    add(Graph);
 	}
 
 	/* Method: actionPerformed(e) */
@@ -37,24 +40,44 @@ public class NameSurfer extends ConsoleProgram implements NameSurferConstants {
 	 * button actions.
 	 */
 	private String line;
-	public void actionPerformed(ActionEvent e) {
-		String cmd ;
-		line = NameInput.getText();
-		cmd = e.getActionCommand();
-		if(cmd.equals("Graph")) println("Graph : "+line);
-		else if(cmd.equals("Clear")) println("Clear");
-		
+	private NameSurferEntry temp;
+	public void actionPerformed(ActionEvent e) {		
+		if(e.getActionCommand().equals("Clear")){
+			Graph.clear();
+			Graph.update();
+		}
+		else{
+			line = NameInput.getText();
+			temp = DB.findEntry(line);
+			if(temp!=null){
+				println(temp);
+				Graph.addEntry(temp);
+				Graph.update();
+			}
+		}
 	}
 	
 	public void keyPressed(KeyEvent e){
 		line = NameInput.getText();
-		if(e.getKeyCode()==KeyEvent.VK_ENTER)println("Graph : "+line);
+		temp = DB.findEntry(line);
+		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+			if(temp!=null){
+				println(temp);
+				Graph.addEntry(temp);
+				Graph.update();
+			}
+		}
 	}
 	
 	private JLabel NameLabel;
 	private JTextField NameInput;
 	private JButton ClickGraph;
 	private JButton ClickClear;
+	private NameSurferDataBase DB;
+	private NameSurferGraph Graph;
+	
+	
+	
 }
 
 
