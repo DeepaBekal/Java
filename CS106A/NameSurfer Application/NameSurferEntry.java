@@ -21,15 +21,21 @@ public class NameSurferEntry implements NameSurferConstants {
 		SplitLine(line);
 	}
 	
+	
+	/**
+	 * Given a line this method splits the name & rankings. Converts rankings to Integer & 
+	 * stores in a Integer array.
+	 * @param line consists of data which has Name & rankings eg. Aaron 193 208 218 274 279 232 132 36 32 31 41 77
+	 */
 	private void SplitLine(String line){
 		int space = line.indexOf(' ');
-		Name = line.substring(0, space);
+		Name = line.substring(0, space);					//till occurrence of 1st space is the name
 		String num = line.substring(space+1);
-		StringTokenizer st = new StringTokenizer(num);
+		StringTokenizer st = new StringTokenizer(num);		//splits the rankings which r in String type
 		for(int i=0;st.hasMoreTokens();i++){
-			String temp = st.nextToken();
-			int rank = Integer.parseInt(temp);
-			Rankings[i]=rank;
+			String temp = st.nextToken();					//returns every rank in String type
+			int rank = Integer.parseInt(temp);				//ranking converted to Integer
+			Rankings[i]=rank;								//ranking added to Integer Array
 		}
 	}
 
@@ -38,7 +44,7 @@ public class NameSurferEntry implements NameSurferConstants {
 	 * Returns the name associated with this entry.
 	 */
 	public String getName() {
-		return Name;
+		return Name;										
 	}
 
 	/* Method: getRank(decade) */
@@ -68,6 +74,6 @@ public class NameSurferEntry implements NameSurferConstants {
 	}
 	
 	private String Name;
-	private int[] Rankings = new int[NDECADES];
+	private int[] Rankings = new int[NDECADES];					//integer array to store the converted rankings from String
 }
 

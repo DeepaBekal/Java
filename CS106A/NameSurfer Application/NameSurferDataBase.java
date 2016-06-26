@@ -27,7 +27,10 @@ public class NameSurferDataBase implements NameSurferConstants {
 		BuildDataBase(filename);
 	}
 	
-	
+	/**
+	 * Reads the file line by line & adds to the HashMap
+	 * @param filename such as text file has names & rankings
+	 */
 	private void BuildDataBase(String filename){
 		try{
 			RD = new BufferedReader(new FileReader(filename));
@@ -35,7 +38,7 @@ public class NameSurferDataBase implements NameSurferConstants {
 				String temp = RD.readLine();
 				if(temp==null) break;
 				NameSurferEntry Reader = new NameSurferEntry(temp);
-				NameSurfMap.put(Reader.getName(), Reader);
+				NameSurfMap.put(Reader.getName(), Reader);				//puts the key as the name, data of NameSurferEntry type into the HashMap
 			} RD.close();			
 		}
 		catch(Exception e){
@@ -49,11 +52,12 @@ public class NameSurferDataBase implements NameSurferConstants {
 	/**
 	 * Returns the NameSurferEntry associated with this name, if one
 	 * exists.  If the name does not appear in the database, this
-	 * method returns null.
+	 * method returns null. If the name exists then returns the in the form of
+	 * NameSurferEntry with name & rankings.
 	 */
 	public NameSurferEntry findEntry(String name) {
-		
-		String CheckCase1, CheckCase2 ="";
+		/*to make it case-insensitive*/
+		String CheckCase1, CheckCase2 ="";						
 		CheckCase1 = name.substring(0,1);
 		CheckCase1=CheckCase1.toUpperCase();
 		CheckCase2=name.substring(1);
@@ -64,7 +68,7 @@ public class NameSurferDataBase implements NameSurferConstants {
 	}
 	
 	private BufferedReader RD;
-	private HashMap<String, NameSurferEntry> NameSurfMap = new HashMap<String, NameSurferEntry>();
+	private HashMap<String, NameSurferEntry> NameSurfMap = new HashMap<String, NameSurferEntry>();	//HashMap with key as Strings, value as NameSurferEntry type which has name & rankings 
 	
 }
 

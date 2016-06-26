@@ -20,7 +20,7 @@ public class NameSurferGraph extends GCanvas
 	 */
 	public NameSurferGraph() {
 		addComponentListener(this);
-		NameData = new ArrayList<NameSurferEntry>();
+		NameData = new ArrayList<NameSurferEntry>();			//updates the ArrayList with entered names & stores their NameSurferEntry
 	}
 	
 	
@@ -60,12 +60,18 @@ public class NameSurferGraph extends GCanvas
 			}
 		}
 	}
-	
+	/**
+	 * Draws the default graph grid x, y axis
+	 */
 	private void DrawGraphGrid(){
 		DrawHorizontalLines();
 		DrawVerticalLines();
 		PutDecades();
 	}
+	
+	/**
+	 * Draws 2 horizontal lines on top & bottom at GRAPH_MARGIN_SIZE 
+	 */
 	
 	private void DrawHorizontalLines(){
 		int x1=0, x2, y1, y2;
@@ -77,7 +83,9 @@ public class NameSurferGraph extends GCanvas
 		add(hl1);
 		add(hl2);
 	}
-	
+	/**
+	 * Draws vertical lines for each decade evenly splitting the application width in NDECADES
+	 */
 	private void DrawVerticalLines(){
 		int x=0,y1=0, y2;
 		y2= getHeight();
@@ -88,6 +96,9 @@ public class NameSurferGraph extends GCanvas
 		}		
 	}
 	
+	/**
+	 * Puts the  text of decades along with vertical lines respectively
+	 */
 	private void PutDecades(){
 		int x=0,y=0;
 		y= getHeight()-GRAPH_MARGIN_SIZE+15;
@@ -104,8 +115,15 @@ public class NameSurferGraph extends GCanvas
 		}	
 	}
 	
-	
+	/**
+	 * Draws the graph for each name entered & all graphs are displayed(all entries in NameData
+	 * until clear method is called.
+	 * @param NameEntry of type NameSurferEntry in the NameData array which has list of all 
+	 * Name entered for  displaying graph.
+	 * @param EntryCounter points to NameSurferEntry in the NameData array
+	 */
 	private void DrawEntry(NameSurferEntry NameEntry, int EntryCounter){
+		/*Draws the graph using GLines by calculating x, y for start & end points*/
 		for(int j=0;j<NDECADES-1;j++){
 			int rank1 = NameEntry.getRank(j);
 			int rank2 = NameEntry.getRank(j+1);
@@ -113,18 +131,22 @@ public class NameSurferGraph extends GCanvas
 			double x2=(j+1)*(getWidth()/NDECADES);
 			int y1=0;
 			int y2=0;
+			/*if rankings are not zero then calculate y1 & y2 */
 			if(rank1!=0 && rank2!=0){
 				y1=GRAPH_MARGIN_SIZE+(getHeight()-GRAPH_MARGIN_SIZE*2)*rank1/MAX_RANK;
 				y2=GRAPH_MARGIN_SIZE+(getHeight()-GRAPH_MARGIN_SIZE*2)*rank2/MAX_RANK;
 			}
+			/*if ranking is zero then y1, y2 is at the bottom x line*/
 			else if(rank1==0 && rank2==0){
 				y1=getHeight()-GRAPH_MARGIN_SIZE;
 				y2=getHeight()-GRAPH_MARGIN_SIZE;
 			}
+			/*if 1 rank is zero then y1 is bottom x line*/
 			else if(rank1==0){
 				y1=getHeight()-GRAPH_MARGIN_SIZE;
 				y2=GRAPH_MARGIN_SIZE+(getHeight()-GRAPH_MARGIN_SIZE*2)*rank2/MAX_RANK;
 			}
+			/*if 2 rank is zero then y2 is bottom x line*/
 			else if(rank2==0){
 				y1=GRAPH_MARGIN_SIZE+(getHeight()-GRAPH_MARGIN_SIZE*2)*rank1/MAX_RANK;
 				y2=getHeight()-GRAPH_MARGIN_SIZE;
@@ -142,10 +164,10 @@ public class NameSurferGraph extends GCanvas
 			else if(EntryCounter%4==3){
 				plot.setColor(Color.DARK_GRAY);
 			}
-			add(plot);
-			
+			add(plot);			
 		}
 		
+		/*To display names along every rank point*/
 		for(int h=0;h<NDECADES;h++){
 			String name = NameEntry.getName();
 			int rank = NameEntry.getRank(h);
@@ -184,5 +206,6 @@ public class NameSurferGraph extends GCanvas
 	public void componentResized(ComponentEvent e) { update(); }
 	public void componentShown(ComponentEvent e) { }
 	
-	private ArrayList<NameSurferEntry> NameData;
+	/*Private instance variables*/
+	private ArrayList<NameSurferEntry> NameData;					//ArrayList of NameSurferEntry of all enetered names 
 }
