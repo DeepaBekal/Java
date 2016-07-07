@@ -9,6 +9,10 @@ import acm.program.*;
 import acm.graphics.*;
 import acm.util.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class FacePamphlet extends ConsoleProgram 
@@ -49,6 +53,7 @@ public class FacePamphlet extends ConsoleProgram
 		add(DeleteProfile, NORTH);
 		add(LookUpProfile, NORTH);
 		addActionListeners();		
+		DB = new FacePamphletDatabase();
 	}
     
   
@@ -61,13 +66,74 @@ public class FacePamphlet extends ConsoleProgram
 		String cmd = e.getActionCommand();
 		if(NameInput.getText().equals(""))println("Please enter Name.");
 		else{
-			if (cmd.equals("Add")) println("Add : "+NameInput.getText());
-			else if (cmd.equals("Delete")) println("Delete : "+NameInput.getText());
-			else if (cmd.equals("Lookup")) println("Lookup : "+NameInput.getText());
-			if (cmd.equals("Change Status")) println("Change Status : "+StatusText.getText());
-			else if (cmd.equals("Change Picture")) println("Change Picture : "+PictureText.getText());
-			else if (cmd.equals("Add Friend")) println("Add Friend : "+FriendText.getText());	
+			if (cmd.equals("Add")){
+				if(DB.containsProfile(NameInput.getText())){
+					println("Add: Profile for "+NameInput.getText()+" already exists.");
+				}
+				else{
+					Name = new FacePamphletProfile(NameInput.getText());
+					DB.addProfile(Name);
+					//CurrentProfile = Name;
+					if(DB.containsProfile(NameInput.getText())){
+						println("Add: New Profile: "+Name+".");
+						println("--> Current profile: "+Name);
+					}
+				}
+			}
+			else if (cmd.equals("Delete")){
+				if(!DB.containsProfile(NameInput.getText())){
+					println("Delete: profile with name "+ NameInput.getText()+" does not exist.");
+				}
+				else{
+					DB.deleteProfile(NameInput.getText());
+					if(!DB.containsProfile(NameInput.getText())){
+						println("Delete: profile of "+NameInput.getText()+" deleted.");
+						Name=null;
+					}				
+				}
+			}
+			else if (cmd.equals("Lookup")){
+				if(DB.containsProfile(NameInput.getText())){
+					Name = DB.getProfile(NameInput.getText());
+					println("Lookup: "+Name);
+				}
+				else {
+					println("Lookup: Profile with name "+NameInput.getText()+" does not exist");
+					Name=null;
+				}
+			}
 			
+			
+			
+			if (cmd.equals("Change Status")) {
+				if(Name!=null) ChangeStatus(Name);
+				else println("Please select a profile to change status.");
+				//println("Change Status : "+StatusText.getText());
+			}
+			else if (cmd.equals("Change Picture")){
+				if(Name!=null)ChangePicture(Name);
+				else println("Please select a profile to change picture.");
+				//println("Change Picture : "+PictureText.getText());
+			}
+			else if (cmd.equals("Add Friend")){
+				if(Name!=null){
+					String FriendName = FriendText.getText();
+					if(FriendName.equals(Name.getName())) println("Enter friend name other than own name.");
+					else if(DB.containsProfile(FriendName)){
+						if(Name.addFriend(FriendName)){
+							Mutual = DB.getProfile(FriendName);
+							Mutual.addFriend(Name.getName());
+							println(FriendText.getText()+" added as a friend");
+							println("--> Current profile: "+Name);
+						}
+						else println(FriendText.getText()+" is already in friends list");
+					}
+					else println(FriendName+" profile does not exist.");					
+				}
+				else println("Please select a profile to add friend to");
+				
+				//println("Add Friend : "+FriendText.getText());	
+			}
 		}		
 	}
     
@@ -83,6 +149,25 @@ public class FacePamphlet extends ConsoleProgram
     	}
     }
     
+    private void ChangeStatus(FacePamphletProfile FPP){
+    		FPP.setStatus(StatusText.getText());
+        	println("Status updated to "+FPP.getStatus());
+        	println("--> Current profile: "+FPP);
+    }
+    
+    private void ChangePicture(FacePamphletProfile FPP){
+    		GImage image = null;
+    		String filename = PictureText.getText();
+    		try{
+    			  image = new GImage(filename); 	
+    			  FPP.setImage(image);
+    			  println("Picture updated.");
+    			  println("--> Current Profile: "+FPP);
+    		} catch (ErrorException e){
+    			image=null;
+    		}
+    }
+    
     /*Private instance variables*/
     private JTextField StatusText;
     private JButton StatusButton;
@@ -95,5 +180,8 @@ public class FacePamphlet extends ConsoleProgram
     private JButton AddProfile;
     private JButton DeleteProfile;
     private JButton LookUpProfile;
+    private FacePamphletDatabase DB;
+    private FacePamphletProfile Name;
+    private FacePamphletProfile Mutual;
 
 }
