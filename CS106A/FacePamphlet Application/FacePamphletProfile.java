@@ -21,8 +21,7 @@ public class FacePamphletProfile implements FacePamphletConstants {
 	public FacePamphletProfile(String name) {
 		ProfileName = name;
 		ProfilePicture = null;
-		//ProfilePicture.setSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-		ProfileStatus = "No current status";
+		ProfileStatus = "";
 		FriendList = new ArrayList<String>();
 	}
 
@@ -115,6 +114,7 @@ public class FacePamphletProfile implements FacePamphletConstants {
 	public String toString() {
 		String temp = ProfileName +" ("+ProfileStatus+"): ";
 		Iterator<String> iter = FriendList.iterator();
+		
 		while(iter.hasNext()){
 		temp += iter.next()+", ";
 		}

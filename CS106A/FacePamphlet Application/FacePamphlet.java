@@ -9,14 +9,9 @@ import acm.program.*;
 import acm.graphics.*;
 import acm.util.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class FacePamphlet extends ConsoleProgram 
-					implements FacePamphletConstants {
+public class FacePamphlet extends Program implements FacePamphletConstants {
 
 	/**
 	 * This method has the responsibility for initializing the 
@@ -54,6 +49,8 @@ public class FacePamphlet extends ConsoleProgram
 		add(LookUpProfile, NORTH);
 		addActionListeners();		
 		DB = new FacePamphletDatabase();
+		Canvas = new FacePamphletCanvas();
+		add(Canvas);
 	}
     
   
@@ -64,30 +61,32 @@ public class FacePamphlet extends ConsoleProgram
      */
     public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		if(NameInput.getText().equals(""))println("Please enter Name.");
+		if(NameInput.getText().equals("")){
+			Canvas.showMessage("Please enter Name.");			
+		}
 		else{
 			if (cmd.equals("Add")){
 				if(DB.containsProfile(NameInput.getText())){
-					println("Add: Profile for "+NameInput.getText()+" already exists.");
+					Canvas.showMessage("A profile with name "+NameInput.getText()+" already exists.");
 				}
 				else{
 					Name = new FacePamphletProfile(NameInput.getText());
 					DB.addProfile(Name);
-					//CurrentProfile = Name;
+					Canvas.displayProfile(Name);
 					if(DB.containsProfile(NameInput.getText())){
-						println("Add: New Profile: "+Name+".");
+						Canvas.showMessage("New profile created.");
 						println("--> Current profile: "+Name);
 					}
 				}
 			}
 			else if (cmd.equals("Delete")){
 				if(!DB.containsProfile(NameInput.getText())){
-					println("Delete: profile with name "+ NameInput.getText()+" does not exist.");
+					Canvas.showMessage("Profile with name "+ NameInput.getText()+" does not exist.");
 				}
 				else{
 					DB.deleteProfile(NameInput.getText());
 					if(!DB.containsProfile(NameInput.getText())){
-						println("Delete: profile of "+NameInput.getText()+" deleted.");
+						Canvas.showMessage("Profile of "+NameInput.getText()+" deleted.");
 						Name=null;
 					}				
 				}
@@ -95,10 +94,11 @@ public class FacePamphlet extends ConsoleProgram
 			else if (cmd.equals("Lookup")){
 				if(DB.containsProfile(NameInput.getText())){
 					Name = DB.getProfile(NameInput.getText());
-					println("Lookup: "+Name);
+					Canvas.displayProfile(Name);
+					Canvas.showMessage("Displaying "+Name.getName());
 				}
 				else {
-					println("Lookup: Profile with name "+NameInput.getText()+" does not exist");
+					Canvas.showMessage("Profile with name "+NameInput.getText()+" does not exist.");
 					Name=null;
 				}
 			}
@@ -107,30 +107,31 @@ public class FacePamphlet extends ConsoleProgram
 			
 			if (cmd.equals("Change Status")) {
 				if(Name!=null) ChangeStatus(Name);
-				else println("Please select a profile to change status.");
+				else Canvas.showMessage("Please select a profile to change status.");
 				//println("Change Status : "+StatusText.getText());
 			}
 			else if (cmd.equals("Change Picture")){
 				if(Name!=null)ChangePicture(Name);
-				else println("Please select a profile to change picture.");
+				else Canvas.showMessage("Please select a profile to change picture.");
 				//println("Change Picture : "+PictureText.getText());
 			}
 			else if (cmd.equals("Add Friend")){
 				if(Name!=null){
 					String FriendName = FriendText.getText();
-					if(FriendName.equals(Name.getName())) println("Enter friend name other than own name.");
+					if(FriendName.equals(Name.getName())) Canvas.showMessage("Enter friend name other than own name.");
 					else if(DB.containsProfile(FriendName)){
 						if(Name.addFriend(FriendName)){
 							Mutual = DB.getProfile(FriendName);
 							Mutual.addFriend(Name.getName());
-							println(FriendText.getText()+" added as a friend");
+							Canvas.displayProfile(Name);
+							Canvas.showMessage(FriendText.getText()+" added as a friend");
 							println("--> Current profile: "+Name);
 						}
-						else println(FriendText.getText()+" is already in friends list");
+						else Canvas.showMessage(Name.getName()+" already has "+FriendName+" as a friend.");
 					}
-					else println(FriendName+" profile does not exist.");					
+					else Canvas.showMessage(FriendName+" does not exist.");					
 				}
-				else println("Please select a profile to add friend to");
+				else Canvas.showMessage("Please select a profile to add friend to");
 				
 				//println("Add Friend : "+FriendText.getText());	
 			}
@@ -139,19 +140,39 @@ public class FacePamphlet extends ConsoleProgram
     
     public void keyPressed(KeyEvent e){
     	if(e.getKeyCode()==KeyEvent.VK_ENTER && e.getSource()==StatusText){
-    		println("Change Status : "+StatusText.getText());
+    		if(Name!=null) ChangeStatus(Name);
+			else Canvas.showMessage("Please select a profile to change status.");
+    		//println("Change Status : "+StatusText.getText());
     	}
     	else if(e.getKeyCode()==KeyEvent.VK_ENTER && e.getSource()==PictureText){
-    		println("Change Picture : "+PictureText.getText());
+    		if(Name!=null)ChangePicture(Name);
+			else Canvas.showMessage("Please select a profile to change picture.");
+    		//println("Change Picture : "+PictureText.getText());
     	}
     	else if(e.getKeyCode()==KeyEvent.VK_ENTER && e.getSource()==FriendText){
-    		println("Add Friend : "+FriendText.getText());
+    		if(Name!=null){
+				String FriendName = FriendText.getText();
+				if(FriendName.equals(Name.getName())) Canvas.showMessage("Enter friend name other than own name.");
+				else if(DB.containsProfile(FriendName)){
+					if(Name.addFriend(FriendName)){
+						Mutual = DB.getProfile(FriendName);
+						Mutual.addFriend(Name.getName());
+						Canvas.showMessage(FriendText.getText()+" added as a friend");
+						println("--> Current profile: "+Name);
+					}
+					else Canvas.showMessage(Name.getName()+" already has "+FriendName+" as a friend.");
+				}
+				else Canvas.showMessage(FriendName+" profile does not exist.");					
+			}
+			else Canvas.showMessage("Please select a profile to add friend to");
+    		//println("Add Friend : "+FriendText.getText());
     	}
     }
     
     private void ChangeStatus(FacePamphletProfile FPP){
     		FPP.setStatus(StatusText.getText());
-        	println("Status updated to "+FPP.getStatus());
+    		Canvas.displayProfile(FPP);
+    		Canvas.showMessage("Status updated to "+FPP.getStatus());
         	println("--> Current profile: "+FPP);
     }
     
@@ -161,9 +182,11 @@ public class FacePamphlet extends ConsoleProgram
     		try{
     			  image = new GImage(filename); 	
     			  FPP.setImage(image);
-    			  println("Picture updated.");
+    			  Canvas.displayProfile(FPP);
+    			  Canvas.showMessage("Picture updated.");
     			  println("--> Current Profile: "+FPP);
     		} catch (ErrorException e){
+    			Canvas.showMessage("Image does not exist.");
     			image=null;
     		}
     }
@@ -183,5 +206,6 @@ public class FacePamphlet extends ConsoleProgram
     private FacePamphletDatabase DB;
     private FacePamphletProfile Name;
     private FacePamphletProfile Mutual;
+    private FacePamphletCanvas Canvas;
 
 }
