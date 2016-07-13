@@ -20,7 +20,6 @@ public class FacePamphletCanvas extends GCanvas
 	 * the display
 	 */
 	public FacePamphletCanvas() {
-		// You fill this in
 	}
 
 	
@@ -35,7 +34,7 @@ public class FacePamphletCanvas extends GCanvas
 		double x = getWidth()/3;
 		double y = getHeight()-BOTTOM_MESSAGE_MARGIN;
 		displayMessage.setFont(MESSAGE_FONT);
-		if(getElementAt(x,y)!=null) remove(getElementAt(x,y));
+		if(getElementAt(x,y)!=null) remove(getElementAt(x,y));		//prevents overlapping of messages
 		add(displayMessage,x,y);
 	}
 	
@@ -57,6 +56,11 @@ public class FacePamphletCanvas extends GCanvas
 		DisplayFriendList(profile);
 	}
 	
+	
+	/**
+	 * Displays the name on the canvas
+	 * @param profile FacePamphletProfile for which name to be displayed
+	 */
 	private void DisplayName(FacePamphletProfile profile){
 		GLabel name = new GLabel(profile.getName(),LEFT_MARGIN,TOP_MARGIN*2);
 		name.setFont(PROFILE_NAME_FONT);
@@ -64,6 +68,11 @@ public class FacePamphletCanvas extends GCanvas
 		add(name);		
 	}
 	
+	
+	/**
+	 * Displays image on the canvas. If there is no image then "No Image" is displayed
+	 * @param profile FacePamphletProfile for which picture to be displayed
+	 */
 	private void DisplayImage(FacePamphletProfile profile){
 		GRect ImageRect = new GRect(LEFT_MARGIN,TOP_MARGIN*3,IMAGE_WIDTH, IMAGE_HEIGHT);
 		GLabel text = new GLabel("No Image",LEFT_MARGIN*3.5,(TOP_MARGIN*3)+(IMAGE_HEIGHT/2));
@@ -79,6 +88,11 @@ public class FacePamphletCanvas extends GCanvas
 		}
 	}
 	
+	
+	/**
+	 * Displays status for the profile on the canvas
+	 * @param profile FacePamphletProfile for which status to be displayed
+	 */
 	private void DisplayStatus(FacePamphletProfile profile){
 		String status = profile.getStatus(); 		
 		if(!status.isEmpty()){			
@@ -92,6 +106,11 @@ public class FacePamphletCanvas extends GCanvas
 		add(Gstatus);		
 	}
 
+	
+	/**
+	 * Displays the list of freinds for the profile on the canvas
+	 * @param profile FacePamphletProfile for which friends to be displayed
+	 */
 	private void DisplayFriendList(FacePamphletProfile profile){
 		double x, y;
 		x= getWidth()/2;
