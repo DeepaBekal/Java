@@ -1,6 +1,7 @@
 <h2> Face Pamphlet Application </h2>
 
 A social network application which will allow user to create profile, delete profile, look-up a profile on the social network. Each profile owner can add a profile picture, change status and view list of friends.
+Implemented with Java Swing Interactors, Listeners, Graphics, Hash Map, Array List.
 
 <h3> Walkthrough </h3>
 
