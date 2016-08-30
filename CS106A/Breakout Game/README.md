@@ -4,9 +4,9 @@
 Implemented with Graphics, Listeners</p>
 
 <h3> Walkthrough </h3>
-
+<p>Winner</p>
 <img src="https://github.com/DeepaBekal/Java/blob/master/CS106A/Breakout%20Game/Images/Breakout_Winner.gif" alt="Winning game preview"/>
-
+<p>Loser</p>
 <img src="https://github.com/DeepaBekal/Java/blob/master/CS106A/Breakout%20Game/Images/Breakout_Loser.gif" alt="losing game preview" />
 
 GIF created using <a href="http://www.cockos.com/licecap/">Licecap</a>.
