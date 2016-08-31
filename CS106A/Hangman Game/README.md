@@ -8,7 +8,7 @@ Implemented with Graphics, Strings
 <p>Winner</p>
 <img src="https://github.com/DeepaBekal/Java/blob/master/CS106A/Hangman%20Game/Images/Hangman_Winner.gif" alt="Winning game preview"/>
 <p>Loser</p>
-<img src="https://github.com/DeepaBekal/Java/blob/master/CS106A/Hangman%20Game/Images/Hangman_Winner.gif" alt="losing game preview" />
+<img src="https://github.com/DeepaBekal/Java/blob/master/CS106A/Hangman%20Game/Images/Hangman_Loser.gif" alt="losing game preview" />
 
 GIF created using <a href="http://www.cockos.com/licecap/">Licecap</a>.
 
